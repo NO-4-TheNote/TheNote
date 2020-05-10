@@ -1,4 +1,4 @@
-package org.note;
+package view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.net.URL;
+
 
 
 public class MainApp extends Application {
