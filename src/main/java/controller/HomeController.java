@@ -101,11 +101,27 @@ public class HomeController implements Initializable {
         MenuItem renameItem = new MenuItem();
         renameItem.setText("rename");
         renameItem.setOnAction(event -> {
-            String catalog = getCurrentCatalog();
+            final String catalog = getCurrentCatalog();
             if (catalog != null) {
-                // todo: receive new name
-                // todo: check exists
-                // todo: handle rename
+                TextInputDialog dialog = new TextInputDialog(catalog);
+                dialog.setContentText("enter new catalog name:");
+                dialog.setTitle("");
+                dialog.setHeaderText("");
+                Optional<String> result = dialog.showAndWait();
+
+                result.ifPresent(s -> {
+                    if (existsCatalog(s)) {
+                        // todo: show alert
+                    } else {
+                        if (!renameCatalog(catalog, s)) {
+                            // todo: show alert
+                        } else {
+                            catalogList.getItems().remove(catalog);
+                            catalogList.getItems().add(s);
+                            catalogList.getSelectionModel().select(s);
+                        }
+                    }
+                });
             }
         });
 
@@ -179,11 +195,30 @@ public class HomeController implements Initializable {
 
         addMenuItem(contextMenu, "new", this::newNoteAction);
         addMenuItem(contextMenu, "rename", event -> {
-            String note = getCurrentNote();
+            final String note = getCurrentNote();
             if (note != null) {
-                // todo: receive new name
-                // todo: check exists
-                // todo: handle rename
+                final String catalog = getCurrentCatalog();
+
+                TextInputDialog dialog = new TextInputDialog(note);
+                dialog.setTitle("");
+                dialog.setHeaderText("");
+                dialog.setContentText("enter new note name:");
+                Optional<String> result = dialog.showAndWait();
+
+                result.ifPresent(s -> {
+                    if (existsNote(catalog, s)) {
+                        // todo: show alert
+                    } else {
+                        if (!renameNote(catalog, note, s)) {
+                            // todo: show alert
+                        } else {
+                            noteList.getItems().remove(note);
+                            noteList.getItems().add(s);
+                            noteList.getSelectionModel().select(s);
+                            title.setText(s);
+                        }
+                    }
+                });
             }
         });
         addMenuItem(contextMenu, "edit", event -> {

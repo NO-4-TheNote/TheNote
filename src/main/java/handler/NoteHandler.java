@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static util.FileTool.getCatalogPath;
 import static util.FileTool.getNotePath;
 
 public class NoteHandler {
@@ -42,5 +43,9 @@ public class NoteHandler {
 
     public static Boolean existsNote(String catalog, String note) {
         return new File(getNotePath(catalog, note)).exists();
+    }
+
+    public static Boolean renameNote(String catalog, String nameOld, String nameNew) {
+        return new File(getNotePath(catalog, nameOld)).renameTo(new File(getNotePath(catalog, nameNew)));
     }
 }

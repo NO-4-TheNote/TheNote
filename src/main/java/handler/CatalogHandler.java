@@ -8,12 +8,12 @@ import java.util.List;
 import static util.FileTool.*;
 
 public class CatalogHandler {
-    public static Boolean createCatalog(String name){
+    public static Boolean createCatalog(String name) {
         File catalog = new File(getCatalogPath(name));
         return catalog.mkdir();
     }
 
-    public static Boolean deleteCatalog(String name){
+    public static Boolean deleteCatalog(String name) {
         return delete(getCatalogPath(name));
     }
 
@@ -60,5 +60,13 @@ public class CatalogHandler {
             }
             return nameList;
         }
+    }
+
+    public static Boolean existsCatalog(String catalogName) {
+        return new File(getCatalogPath(catalogName)).exists();
+    }
+
+    public static Boolean renameCatalog(String nameOld, String nameNew) {
+        return new File(getCatalogPath(nameOld)).renameTo(new File(getCatalogPath(nameNew)));
     }
 }
