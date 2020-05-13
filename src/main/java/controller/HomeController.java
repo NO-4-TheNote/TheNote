@@ -1,0 +1,311 @@
+package controller;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+
+import static handler.CatalogHandler.*;
+import static handler.NoteHandler.*;
+import static util.FileTool.*;
+
+public class HomeController implements Initializable {
+    private static final String DEFAULT_NEW_CATALOG_NAME = "new-catalog";
+    private static final String DEFAULT_NEW_NOTE_NAME = "new-note";
+
+    @FXML
+    private TextArea content;
+    @FXML
+    private TextField title;
+    @FXML
+    private TextField searchTextField;
+    @FXML
+    private ListView<String> catalogList;
+    @FXML
+    private ListView<String> noteList;
+
+    private String clipboardCatalog;
+    private String clipboardNote;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        initCatalogListMenu();
+        initNoteListMenu();
+
+        try {
+            List<String> catalogList = getCatalogList();
+            this.catalogList.getItems().addAll(catalogList);
+        } catch (IOException e) {
+            // todo: show alert and exit
+            e.printStackTrace();
+        }
+    }
+
+    public void newCatalogAction(ActionEvent evt) {
+        var ref = new Object() {
+            String nameNew = DEFAULT_NEW_CATALOG_NAME;
+        };
+        catalogList.getItems().forEach(name -> {
+            if (name.equals(ref.nameNew)) {
+                if (ref.nameNew.equals(DEFAULT_NEW_CATALOG_NAME)) {
+                    ref.nameNew = ref.nameNew.concat("1");
+                } else {
+                    String last = ref.nameNew.substring(DEFAULT_NEW_CATALOG_NAME.length());
+                    ref.nameNew = ref.nameNew.replace(last, String.valueOf(Integer.parseInt(last) + 1));
+                }
+            }
+        });
+        if (!createCatalog(ref.nameNew)) {
+            // todo: show alert of failing create
+        }
+
+        catalogList.getItems().add(ref.nameNew);
+    }
+
+    public void catalogListClicked(MouseEvent evt) {
+        try {
+            String catalog = getCurrentCatalog();
+            if (catalog != null) {
+                this.noteList.getItems().setAll(getNoteList(catalog));
+//                clearNoteContent();
+            }
+        } catch (IOException e) {
+            // todo: show alert
+            e.printStackTrace();
+        }
+    }
+
+    public void initCatalogListMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem newItem = new MenuItem();
+        newItem.setText("new");
+        newItem.setOnAction(this::newCatalogAction);
+
+        MenuItem renameItem = new MenuItem();
+        renameItem.setText("rename");
+        renameItem.setOnAction(event -> {
+            String catalog = getCurrentCatalog();
+            if (catalog != null) {
+                // todo: receive new name
+                // todo: check exists
+                // todo: handle rename
+            }
+        });
+
+        MenuItem deleteItem = new MenuItem();
+        deleteItem.setText("delete");
+        deleteItem.setOnAction(event -> {
+            String catalog = getCurrentCatalog();
+            if (catalog != null) {
+                // todo: show alert
+                catalogList.getSelectionModel().selectPrevious();
+                catalogList.getItems().remove(catalog);
+                // delete catalog and noteList
+                deleteCatalog(catalog);
+
+                clearNoteContent();
+
+                // show next catalog's noteList
+                catalog = getCurrentCatalog();
+                if (catalog != null) {
+                    try {
+                        noteList.getItems().setAll(getNoteList(catalog));
+                    } catch (IOException e) {
+                        // todo: ignore?
+                        e.printStackTrace();
+                    }
+                } else {
+                    noteList.getItems().setAll(new ArrayList<>());
+                }
+            }
+        });
+
+        contextMenu.getItems().addAll(newItem, renameItem, deleteItem);
+
+        catalogList.setContextMenu(contextMenu);
+    }
+
+    public void newNoteAction(ActionEvent evt) {
+        String catalog = getCurrentCatalog();
+        if (catalog == null) {
+            // todo: show alert
+            return;
+        }
+
+        var ref = new Object() {
+            String nameNew = DEFAULT_NEW_NOTE_NAME;
+        };
+        noteList.getItems().forEach(name -> {
+            if (name.equals(ref.nameNew)) {
+                if (ref.nameNew.equals(DEFAULT_NEW_NOTE_NAME)) {
+                    ref.nameNew = ref.nameNew.concat("1");
+                } else {
+                    String last = ref.nameNew.substring(DEFAULT_NEW_NOTE_NAME.length());
+                    ref.nameNew = ref.nameNew.replace(last, String.valueOf(Integer.parseInt(last) + 1));
+                }
+            }
+        });
+
+        if (!createNote(catalog, ref.nameNew)) {
+            // todo: show alert
+        }
+
+        noteList.getItems().add(ref.nameNew);
+    }
+
+    public void noteListClicked(MouseEvent evt) throws IOException {
+        showNoteContent();
+    }
+
+    public void initNoteListMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        addMenuItem(contextMenu, "new", this::newNoteAction);
+        addMenuItem(contextMenu, "rename", event -> {
+            String note = getCurrentNote();
+            if (note != null) {
+                // todo: receive new name
+                // todo: check exists
+                // todo: handle rename
+            }
+        });
+        addMenuItem(contextMenu, "edit", event -> {
+            final String note = getCurrentNote();
+            if (note != null) {
+                try {
+                    // todo: pass catalog and note
+                    final String catalog = getCurrentCatalog();
+                    FXMLLoader loader = new FXMLLoader(getFxml("editor.fxml"));
+                    loader.setControllerFactory(controllerClass -> {
+                        if (controllerClass == EditController.class) {
+                            return new EditController(catalog, note);
+                        } else {
+                            try {
+                                return controllerClass.getDeclaredConstructor().newInstance();
+                            } catch (Exception exc) {
+                                throw new RuntimeException(exc); // just bail
+                            }
+                        }
+                    });
+
+                    Parent root = loader.load();
+                    Scene scene = new Scene(root);
+                    scene.getStylesheets().add(getCss("styles.css"));
+
+                    Stage editStage = new Stage();
+
+                    editStage.setTitle("The Note");
+                    editStage.setScene(scene);
+                    editStage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        addMenuItem(contextMenu, "copy", event -> {
+            String note = getCurrentNote();
+            if (note != null) {
+                clipboardNote = note;
+                clipboardCatalog = getCurrentCatalog();
+            }
+        });
+        addMenuItem(contextMenu, "paste", event -> {
+            String catalog = getCurrentCatalog();
+            if (clipboardNote != null && clipboardCatalog != null && catalog != null) {
+                if (existsNote(catalog, clipboardNote)) {
+                    // todo: show alert
+                } else {
+                    try {
+                        copyNote(clipboardCatalog, clipboardNote, catalog);
+                        noteList.getItems().add(clipboardNote);
+                    } catch (IOException e) {
+                        // todo: show alert
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        addMenuItem(contextMenu, "delete", event -> {
+            String note = getCurrentNote();
+            if (note != null) {
+                // todo: show alert and get confirm
+                noteList.getSelectionModel().selectPrevious();
+                noteList.getItems().remove(note);
+                deleteNote(getCurrentCatalog(), note);
+
+                note = getCurrentNote();
+                if (note != null) {
+                    try {
+                        showNoteContent();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    clearNoteContent();
+                }
+            }
+        });
+
+        noteList.setContextMenu(contextMenu);
+    }
+
+    private void addMenuItem(ContextMenu menu, String name, EventHandler<ActionEvent> value) {
+        MenuItem item = new MenuItem();
+        item.setText(name);
+        item.setOnAction(value);
+
+        menu.getItems().add(item);
+    }
+
+    // nullable
+    private String getCurrentCatalog() {
+        return catalogList.getSelectionModel().getSelectedItem();
+    }
+
+    // nullable
+    private String getCurrentNote() {
+        return noteList.getSelectionModel().getSelectedItem();
+    }
+
+    private void showNoteContent() throws IOException {
+        String catalog = getCurrentCatalog();
+        String note = getCurrentNote();
+        if (catalog != null && note != null) {
+            title.setText(note);
+            content.setText(getNoteContent(catalog, note));
+        }
+    }
+
+    private void clearNoteContent() {
+        title.setText("");
+        content.setText("");
+    }
+
+    public void importAndExport(ActionEvent evt) {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            File dirToOpen = new File(getDataPath());
+            desktop.open(dirToOpen);
+        } catch (IllegalArgumentException | IOException iae) {
+            System.out.println("File Not Found");
+            // todo: show alert
+        }
+    }
+}

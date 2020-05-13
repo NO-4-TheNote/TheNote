@@ -3,8 +3,9 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EditController">
    <children>
       <MenuBar>
         <menus>
@@ -25,11 +26,10 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ComboBox prefWidth="800.0" VBox.vgrow="NEVER" />
       <HBox alignment="CENTER_LEFT" spacing="4.0" VBox.vgrow="NEVER">
          <children>
             <Label text="title" />
-            <TextField HBox.hgrow="ALWAYS" />
+            <TextField fx:id="editTitle" HBox.hgrow="ALWAYS" />
          </children>
          <VBox.margin>
             <Insets />
@@ -38,18 +38,6 @@
             <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
          </padding>
       </HBox>
-      <ToolBar>
-        <items>
-            <Button mnemonicParsing="false" text="Button" />
-            <Button mnemonicParsing="false" text="Button" />
-            <Separator orientation="VERTICAL" />
-            <Button mnemonicParsing="false" text="Button" />
-            <Button mnemonicParsing="false" text="Button" />
-          <Button mnemonicParsing="false" text="Button" />
-            <Separator orientation="VERTICAL" />
-            <Button mnemonicParsing="false" text="Button" />
-        </items>
-      </ToolBar>
-      <TextArea prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+      <HTMLEditor fx:id="editContent" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" prefHeight="200.0" prefWidth="506.0" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>
