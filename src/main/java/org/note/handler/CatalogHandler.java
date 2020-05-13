@@ -1,11 +1,11 @@
-package handler;
+package org.note.handler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static util.FileTool.*;
+import static org.note.util.FileTool.*;
 
 public class CatalogHandler {
     public static Boolean createCatalog(String name) {

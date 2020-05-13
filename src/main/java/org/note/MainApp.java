@@ -1,11 +1,13 @@
+package org.note;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import static util.FileTool.getCss;
-import static util.FileTool.getFxml;
+import static org.note.util.FileTool.getCss;
+import static org.note.util.FileTool.getFxml;
 
 
 public class MainApp extends Application {

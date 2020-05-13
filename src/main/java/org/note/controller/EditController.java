@@ -1,4 +1,4 @@
-package controller;
+package org.note.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static handler.NoteHandler.*;
+import static org.note.handler.NoteHandler.*;
 
 // todo: 附件
 public class EditController implements Initializable {

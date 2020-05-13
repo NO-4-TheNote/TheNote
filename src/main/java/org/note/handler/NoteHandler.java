@@ -1,4 +1,4 @@
-package handler;
+package org.note.handler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static util.FileTool.getNotePath;
+import static org.note.util.FileTool.getNotePath;
 
 public class NoteHandler {
     public static Boolean createNote(String catalogName, String noteName) {

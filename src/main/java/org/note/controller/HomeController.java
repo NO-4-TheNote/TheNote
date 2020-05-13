@@ -1,4 +1,4 @@
-package controller;
+package org.note.controller;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,9 +21,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-import static handler.CatalogHandler.*;
-import static handler.NoteHandler.*;
-import static util.FileTool.*;
+import static org.note.handler.CatalogHandler.*;
+import static org.note.handler.NoteHandler.*;
+import static org.note.util.FileTool.*;
 
 public class HomeController implements Initializable {
     private static final String DEFAULT_NEW_CATALOG_NAME = "new-catalog";
@@ -34,7 +34,7 @@ public class HomeController implements Initializable {
     @FXML
     private TextField title;
     @FXML
-    private TextField searchTextField;
+    private TextField searchTextField; // todo: search
     @FXML
     private ListView<String> catalogList;
     @FXML
@@ -47,6 +47,8 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initCatalogListMenu();
         initNoteListMenu();
+
+        content.getStylesheets().add(getCss("hide-editor-tool.css"));
 
         try {
             List<String> catalogList = getCatalogList();

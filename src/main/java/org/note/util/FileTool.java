@@ -1,5 +1,7 @@
-package util;
+package org.note.util;
 
+
+import org.note.MainApp;
 
 import java.io.File;
 import java.net.URL;
@@ -7,11 +9,11 @@ import java.nio.file.Path;
 
 public class FileTool {
     public static URL getFxml(String name) {
-        return FileTool.class.getResource("/fxml/" + name);
+        return MainApp.class.getResource("fxml/" + name);
     }
 
     public static String getCss(String name) {
-        return FileTool.class.getResource("/css/" + name).toExternalForm();
+        return MainApp.class.getResource("css/" + name).toExternalForm();
     }
 
     public static String getWorkPath() {
