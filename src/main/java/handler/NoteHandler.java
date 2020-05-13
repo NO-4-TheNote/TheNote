@@ -2,12 +2,12 @@ package handler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static util.FileTool.getCatalogPath;
 import static util.FileTool.getNotePath;
 
 public class NoteHandler {
@@ -20,6 +20,7 @@ public class NoteHandler {
         }
     }
 
+    // todo: 删除附件
     public static Boolean deleteNote(String catalogName, String noteName) {
         File note = new File(getNotePath(catalogName, noteName));
         return note.delete();
@@ -47,5 +48,11 @@ public class NoteHandler {
 
     public static Boolean renameNote(String catalog, String nameOld, String nameNew) {
         return new File(getNotePath(catalog, nameOld)).renameTo(new File(getNotePath(catalog, nameNew)));
+    }
+
+    public static void saveNoteContent(String catalog, String note, String content) throws IOException {
+        FileWriter file = new FileWriter(getNotePath(catalog, note));
+        file.write(content);
+        file.close();
     }
 }

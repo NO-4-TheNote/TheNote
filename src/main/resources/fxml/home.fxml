@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
 
 <VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
    <children>
@@ -13,11 +14,11 @@
             <items>
                   <Menu mnemonicParsing="false" text="new...">
                     <items>
-                      <MenuItem onAction="#newCatalogAction" mnemonicParsing="false" text="catalog" />
-                        <MenuItem onAction="#newNoteAction" mnemonicParsing="false"  text="note" />
+                      <MenuItem mnemonicParsing="false" onAction="#newCatalogAction" text="catalog" />
+                        <MenuItem mnemonicParsing="false" onAction="#newNoteAction" text="note" />
                     </items>
                   </Menu>
-                <MenuItem onAction="#importAndExport" mnemonicParsing="false" text="Import/Export" />
+                <MenuItem mnemonicParsing="false" onAction="#importAndExport" text="Import/Export" />
             </items>
 
           </Menu>
@@ -60,7 +61,7 @@
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="2.0" HBox.hgrow="ALWAYS">
                <children>
                   <TextField fx:id="title" editable="false" prefHeight="24.0" />
-                  <TextArea fx:id="content" editable="false" VBox.vgrow="ALWAYS" />
+                  <HTMLEditor fx:id="content" disable="true" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" prefHeight="200.0" prefWidth="506.0" stylesheets="@/css/hide-editor-tool.css" VBox.vgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets top="2.0" />

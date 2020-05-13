@@ -9,9 +9,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -30,7 +30,7 @@ public class HomeController implements Initializable {
     private static final String DEFAULT_NEW_NOTE_NAME = "new-note";
 
     @FXML
-    private TextArea content;
+    private HTMLEditor content;
     @FXML
     private TextField title;
     @FXML
@@ -94,13 +94,8 @@ public class HomeController implements Initializable {
     public void initCatalogListMenu() {
         ContextMenu contextMenu = new ContextMenu();
 
-        MenuItem newItem = new MenuItem();
-        newItem.setText("new");
-        newItem.setOnAction(this::newCatalogAction);
-
-        MenuItem renameItem = new MenuItem();
-        renameItem.setText("rename");
-        renameItem.setOnAction(event -> {
+        addMenuItem(contextMenu, "new", this::newCatalogAction);
+        addMenuItem(contextMenu, "rename", event -> {
             final String catalog = getCurrentCatalog();
             if (catalog != null) {
                 TextInputDialog dialog = new TextInputDialog(catalog);
@@ -124,10 +119,7 @@ public class HomeController implements Initializable {
                 });
             }
         });
-
-        MenuItem deleteItem = new MenuItem();
-        deleteItem.setText("delete");
-        deleteItem.setOnAction(event -> {
+        addMenuItem(contextMenu, "delete", event -> {
             String catalog = getCurrentCatalog();
             if (catalog != null) {
                 // todo: show alert
@@ -152,8 +144,6 @@ public class HomeController implements Initializable {
                 }
             }
         });
-
-        contextMenu.getItems().addAll(newItem, renameItem, deleteItem);
 
         catalogList.setContextMenu(contextMenu);
     }
@@ -225,7 +215,7 @@ public class HomeController implements Initializable {
             final String note = getCurrentNote();
             if (note != null) {
                 try {
-                    // todo: pass catalog and note
+                    // pass catalog and note
                     final String catalog = getCurrentCatalog();
                     FXMLLoader loader = new FXMLLoader(getFxml("editor.fxml"));
                     loader.setControllerFactory(controllerClass -> {
@@ -249,6 +239,14 @@ public class HomeController implements Initializable {
                     editStage.setTitle("The Note");
                     editStage.setScene(scene);
                     editStage.show();
+                    editStage.setOnCloseRequest(evt -> {
+                        try {
+                            showNoteContent();
+                        } catch (IOException e) {
+                            // ignore
+                            e.printStackTrace();
+                        }
+                    });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -324,13 +322,14 @@ public class HomeController implements Initializable {
         String note = getCurrentNote();
         if (catalog != null && note != null) {
             title.setText(note);
-            content.setText(getNoteContent(catalog, note));
+            String str = getNoteContent(catalog, note);
+            content.setHtmlText(str);
         }
     }
 
     private void clearNoteContent() {
         title.setText("");
-        content.setText("");
+        content.setHtmlText("");
     }
 
     public void importAndExport(ActionEvent evt) {
