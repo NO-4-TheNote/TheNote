@@ -1,5 +1,5 @@
-## The Note
-javaFX + SQLite
+## The Note (File version)
+javaFX
 
 develop environment: OpenJDK 13 + IntelliJ IDEA 2019.3.4
 
